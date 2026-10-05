@@ -1,0 +1,439 @@
+<!doctype html>
+<html lang="de"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Lernzettel WB</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,700&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@500&display=swap">
+<style>
+/* Layout: eine schmale Lernspalte, Karte im Zentrum, Tabs oben. Farbwelt: Banknoten-Teal auf kühlem Papier. */
+:root{
+  --bg:#edf1f3; --surface:#ffffff; --ink:#0f2233; --muted:#566a78; --line:#d3dce2;
+  --accent:#0a6b6b; --accent-ink:#ffffff; --accent-soft:#dcefee;
+  --ok:#17794a; --ok-soft:#dff3e8; --bad:#b3261e; --bad-soft:#fbe4e1; --warn:#9a6700; --warn-soft:#fbefd2;
+  --f-display:"Bricolage Grotesque","IBM Plex Sans",system-ui,sans-serif;
+  --f-body:"IBM Plex Sans",system-ui,-apple-system,"Segoe UI",sans-serif;
+  --f-mono:"IBM Plex Mono",ui-monospace,Menlo,monospace;
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --bg:#0b151d; --surface:#13212b; --ink:#e6edf2; --muted:#93a5b2; --line:#26394600;
+  --line:#263946; --accent:#4cc2be; --accent-ink:#06201f; --accent-soft:#12312f;
+  --ok:#5fd18f; --ok-soft:#14301f; --bad:#ff8a80; --bad-soft:#3a1816; --warn:#f0c15a; --warn-soft:#352a0e; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#0b151d; --surface:#13212b; --ink:#e6edf2; --muted:#93a5b2; --line:#263946;
+  --accent:#4cc2be; --accent-ink:#06201f; --accent-soft:#12312f;
+  --ok:#5fd18f; --ok-soft:#14301f; --bad:#ff8a80; --bad-soft:#3a1816; --warn:#f0c15a; --warn-soft:#352a0e; color-scheme:dark}
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--ink);font-family:var(--f-body);font-size:16px;line-height:1.5;padding-inline:16px;padding-block:20px 48px}
+.wrap{max-width:720px;margin-inline:auto;display:flex;flex-direction:column;gap:16px;min-width:0}
+header{display:flex;justify-content:space-between;align-items:flex-end;gap:12px;flex-wrap:wrap}
+h1{font-family:var(--f-display);font-size:1.7rem;line-height:1.1;margin:0;text-wrap:balance}
+.sub{color:var(--muted);font-size:.85rem}
+.status{font-size:.75rem;color:var(--muted);display:flex;align-items:center;gap:6px}
+.dot{width:8px;height:8px;border-radius:50%;background:var(--warn)}
+.dot.ok{background:var(--ok)}
+nav{display:flex;gap:4px;background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:4px}
+nav button{flex:1;border:0;background:transparent;color:var(--muted);font:600 .9rem var(--f-body);padding:9px 6px;border-radius:7px;cursor:pointer}
+nav button[aria-selected="true"]{background:var(--accent);color:var(--accent-ink)}
+button:focus-visible,textarea:focus-visible,label:focus-within{outline:2px solid var(--accent);outline-offset:2px}
+.chips{display:flex;gap:6px;flex-wrap:wrap}
+.chip{border:1px solid var(--line);background:var(--surface);color:var(--ink);font:500 .82rem var(--f-body);padding:6px 11px;border-radius:99px;cursor:pointer}
+.chip[aria-pressed="true"]{background:var(--ink);color:var(--bg);border-color:var(--ink)}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:20px;display:flex;flex-direction:column;gap:16px;min-width:0}
+.meta{display:flex;justify-content:space-between;align-items:center;gap:8px;font-size:.75rem;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);font-weight:600}
+.boxes{display:flex;gap:4px}
+.boxes i{width:18px;height:6px;border-radius:3px;background:var(--line)}
+.boxes i.on{background:var(--accent)}
+.q{font-family:var(--f-display);font-size:1.25rem;line-height:1.3;font-weight:600;margin:0;text-wrap:balance}
+.hint{font-size:.8rem;color:var(--muted);margin:-8px 0 0}
+.opts{display:flex;flex-direction:column;gap:8px}
+.opt{display:flex;gap:10px;align-items:flex-start;text-align:left;border:1.5px solid var(--line);background:var(--bg);color:var(--ink);font:500 .95rem var(--f-body);padding:12px 14px;border-radius:10px;cursor:pointer;width:100%}
+.opt:hover:not(:disabled){border-color:var(--accent)}
+.opt.sel{border-color:var(--accent);background:var(--accent-soft)}
+.opt.right{border-color:var(--ok);background:var(--ok-soft)}
+.opt.wrong{border-color:var(--bad);background:var(--bad-soft)}
+.opt .mk{flex:none;width:18px;height:18px;border:1.5px solid var(--muted);border-radius:50%;margin-top:2px}
+.opt.multi .mk{border-radius:4px}
+.opt.sel .mk{background:var(--accent);border-color:var(--accent)}
+textarea{width:100%;min-height:120px;resize:vertical;font:400 .95rem var(--f-body);color:var(--ink);background:var(--bg);border:1.5px solid var(--line);border-radius:10px;padding:12px}
+.btn{border:0;background:var(--accent);color:var(--accent-ink);font:600 .95rem var(--f-body);padding:12px 18px;border-radius:10px;cursor:pointer;align-self:flex-start}
+.btn:disabled{opacity:.5;cursor:default}
+.btn.ghost{background:transparent;color:var(--ink);border:1.5px solid var(--line)}
+.row{display:flex;gap:8px;flex-wrap:wrap}
+.fb{border-radius:10px;padding:14px;font-size:.92rem;display:flex;flex-direction:column;gap:8px}
+.fb.ok{background:var(--ok-soft)} .fb.no{background:var(--bad-soft)} .fb.part{background:var(--warn-soft)}
+.fb b.t{font-family:var(--f-display);font-size:1.05rem}
+.fb ul{margin:0;padding-left:18px}
+.fb .model{border-top:1px solid var(--line);padding-top:8px}
+.claude{white-space:pre-wrap}
+.bar{height:8px;background:var(--line);border-radius:4px;overflow:hidden}
+.bar>span{display:block;height:100%;background:var(--accent);transition:width .3s}
+@media (prefers-reduced-motion:reduce){.bar>span{transition:none}}
+.stat{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:8px}
+.stat div{background:var(--bg);border-radius:10px;padding:10px 12px}
+.stat b{display:block;font-family:var(--f-display);font-size:1.5rem;font-variant-numeric:tabular-nums}
+.stat span{font-size:.75rem;color:var(--muted)}
+.sec{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:18px 20px;display:flex;flex-direction:column;gap:10px;min-width:0}
+.sec h2{font-family:var(--f-display);font-size:1.15rem;margin:0}
+.sec h3{font-size:.78rem;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);margin:6px 0 0}
+.sec ul{margin:0;padding-left:20px;display:flex;flex-direction:column;gap:3px}
+.sec p{margin:0}
+.tw{overflow-x:auto}
+table{border-collapse:collapse;width:100%;font-size:.88rem}
+th,td{text-align:left;padding:7px 9px;border-bottom:1px solid var(--line);vertical-align:top}
+th{font-size:.75rem;letter-spacing:.05em;text-transform:uppercase;color:var(--muted)}
+.iban{display:flex;flex-wrap:wrap;gap:4px;font-family:var(--f-mono);font-size:.85rem}
+.iban span{border:1px solid var(--line);background:var(--bg);border-radius:6px;padding:4px 8px;display:flex;flex-direction:column;align-items:center;gap:2px}
+.iban em{font:400 .65rem var(--f-body);color:var(--muted);font-style:normal}
+.mn{background:var(--accent-soft);border-radius:8px;padding:8px 10px;font-size:.88rem}
+.weak{display:flex;flex-direction:column;gap:6px;font-size:.9rem}
+.weak div{display:flex;justify-content:space-between;gap:10px;border-bottom:1px solid var(--line);padding-bottom:6px}
+.weak small{color:var(--muted);white-space:nowrap}
+</style>
+
+<div class="wrap">
+  <header>
+    <div>
+      <h1>Lernzettel WB</h1>
+      <div class="sub">Zahlungsverkehr · Rechts- und Geschäftsfähigkeit</div>
+    </div>
+    <div class="status" id="status"><span class="dot"></span><span>lädt …</span></div>
+  </header>
+  <nav role="tablist" id="tabs">
+    <button role="tab" data-v="ueben" aria-selected="true">Üben</button>
+    <button role="tab" data-v="zettel" aria-selected="false">Lernzettel</button>
+    <button role="tab" data-v="stand" aria-selected="false">Fortschritt</button>
+  </nav>
+  <main id="main"></main>
+</div>
+
+<script>
+/* ---------- Inhalte ---------- */
+const TOPICS={Z:"Zahlungsverkehr",R:"Recht"};
+const CARDS=[];
+const mc=(id,t,q,o,e)=>CARDS.push({id,t,type:"mc",q,o,e});
+const multi=(id,t,q,good,bad,e)=>CARDS.push({id,t,type:"multi",q,good,bad,e});
+const open=(id,t,q,items,min,model,e)=>CARDS.push({id,t,type:"open",q,items,min,model,e});
+
+/* Zahlungsverkehr */
+open("z-fkt","Z","Nenne die 5 Funktionen des Geldes.",[["Tausch","tausch"],["Zahlung","zahlung"],["Wertaufbewahrung","aufbewahr"],["Wertmaßstab","massstab|mass"],["Wertübertragung","ubertrag"]],4,"Tauschfunktion, Zahlungsfunktion, Wertaufbewahrungsfunktion, Wertmaßstabsfunktion, Wertübertragungsfunktion");
+multi("z-fkt2","Z","Welche sind Funktionen des Geldes?",["Tauschfunktion","Wertaufbewahrungsfunktion","Wertmaßstabsfunktion"],["Steuerfunktion","Kreditfunktion"],"Die fünf Funktionen: Tausch, Zahlung, Wertaufbewahrung, Wertmaßstab, Wertübertragung.");
+multi("z-arten","Z","Welche sind Geldarten?",["Bargeld","Buchgeld","Kryptowährung"],["Aktien","Immobilien"],"Geldarten: Bargeld, digitales Geld, Kryptowährung, Buchgeld, Geldersatzmittel.");
+mc("z-ezb","Z","Wer gibt Euro-Banknoten aus?",["Die Europäische Zentralbank (EZB)","Die nationalen Zentralbanken","Die Geschäftsbanken","Die Bundesregierung"],"Banknoten: EZB. Münzen: nationale Zentralbanken.");
+mc("z-muenz","Z","Wer gibt Euro-Münzen aus?",["Die nationalen Zentralbanken","Die EZB","Die Geschäftsbanken","Das Finanzamt"],"Münzen geben die nationalen Zentralbanken aus.");
+mc("z-muenz2","Z","Bis zu welchem Betrag muss ein Gläubiger Münzen annehmen?",["Bis 100 € (max. 50 Stück)","Bis 50 € (max. 100 Stück)","Bis 200 €","Unbegrenzt"],"Münzen: bis 100 €, höchstens 50 Stück.");
+mc("z-note","Z","Banknoten muss der Gläubiger annehmen …",["in unbegrenzter Höhe, vertraglich kann davon abgewichen werden","nur bis 500 €","nur bis 100 €","nie, die Annahme ist freiwillig"],"Beispiel für eine vertragliche Abweichung: Die Bäckerei nimmt keine 500-€-Scheine.");
+mc("z-buch","Z","Was ist Buchgeld?",["Guthaben bei Kreditinstituten, über das frei verfügt werden kann","Noten und Münzen","Schecks und Gutscheine","Kryptowährung"],"Buchgeld = frei verfügbares Guthaben bei einer Bank.");
+mc("z-ersatz","Z","Schecks und Gutscheine zählen zu …",["Geldersatzmitteln","Bargeld","Buchgeld","digitalem Geld"],"Schecks und Gutscheine sind Geldersatzmittel.");
+open("z-quitt","Z","Nenne mindestens 6 Bestandteile einer Quittung.",[["Währung","wahrung|euro"],["Quittungsnummer","nummer"],["Betrag in Ziffern","ziffer"],["Betrag in Worten","worten|in wort|buchstab"],["Datum","datum"],["Unterschrift/Stempel","unterschrift|stempel"],["Verwendungszweck","zweck|\\bfur\\b"],["Ort","\\bort\\b"],["Name des Zahlenden","name|zahlende"]],6,"Währung, Quittungsnummer, Betrag in Ziffern, Betrag in Worten, Datum der Zahlung, Unterschrift/Stempel des Empfängers, Verwendungszweck („für“), Ort, Name des Zahlenden");
+multi("z-quitt2","Z","Welche Angaben gehören auf eine Quittung?",["Quittungsnummer","Betrag in Ziffern und in Worten","Unterschrift oder Stempel des Empfängers","Verwendungszweck"],["IBAN des Zahlenden","Geburtsdatum des Empfängers"],"Dazu kommen Währung, Datum, Ort und Name des Zahlenden.");
+mc("z-quitt3","Z","Wer hat ein Recht auf eine Zahlungsbestätigung (Quittung)?",["Der Zahlende","Der Empfänger","Die Bank","Das Finanzamt"],"Der Zahlende kann eine Quittung verlangen.");
+mc("z-halb","Z","Bei der halbbaren Zahlung braucht …",["der Zahler oder der Empfänger ein Konto","beide ein Konto","keiner ein Konto","nur die Bank ein Konto"],"Halbbar = einer der beiden hat ein Konto. Unbar = beide.");
+multi("z-halb2","Z","Welche Zahlungsarten sind halbbar?",["Barscheck","Zahlung per Zahlschein","Nachnahme"],["Überweisung","Dauerauftrag","Lastschrift"],"Überweisung, Dauerauftrag, Lastschrift, Karte und PayPal sind unbar.");
+mc("z-zahl","Z","Wie funktioniert die Zahlung per Zahlschein?",["Der Zahlende gibt Bargeld und Zahlschein bei der Bank ab, der Empfänger bekommt es auf sein Konto gutgeschrieben","Der Postbote kassiert den Betrag und bringt ihn zur Bank","Der Empfänger löst den Zahlschein bar bei der Bank des Zahlenden ein","Beide brauchen ein Konto und die Bank bucht um"],"Zahlschein = halbbar: Bar einzahlen, Gutschrift auf dem Konto des Empfängers.");
+mc("z-nach1","Z","Nachnahme: Was ist der Vorteil für den Verkäufer?",["Er bekommt auf jeden Fall sein Geld","Er bekommt sicher die Ware zurück","Er zahlt keine Gebühren","Das Geld kommt sofort per Karte"],"Der Postbote kassiert Rechnungsbetrag plus Nachnahmegebühr und zahlt auf das Konto des Empfängers ein.");
+mc("z-nach2","Z","Nachnahme: Was ist der Vorteil für den Käufer?",["Er bekommt auf jeden Fall die Ware","Er zahlt weniger Gebühren","Er zahlt erst nach 30 Tagen","Er kann den Betrag zurückbuchen"],"Der Käufer zahlt nur gegen Aushändigung des Pakets.");
+mc("z-last","Z","Stromrechnung: immer derselbe Anbieter, jedes Mal ein anderer Betrag, wechselnde Termine. Welche Zahlungsart?",["Lastschrift","Dauerauftrag","Barscheck","Nachnahme"],"Lastschrift = gleicher Empfänger, unterschiedliche Beträge, unterschiedliche Zeitpunkte.");
+mc("z-dauer","Z","Miete: gleicher Empfänger, gleicher Betrag, gleicher Termin. Welche Zahlungsart?",["Dauerauftrag","Lastschrift","Verrechnungsscheck","Nachnahme"],"Dauerauftrag = gleicher Empfänger, gleicher Betrag, gleicher Zeitpunkt.");
+mc("z-sepa","Z","SEPA steht für …",["Single European Payment Area","Secure Euro Payment Account","Standard European Payment Agreement","Single Euro Payment Authority"],"SEPA = einheitlicher europäischer Zahlungsraum.");
+mc("z-iban","Z","Wie viele Stellen hat eine deutsche IBAN?",["22","18","20","24"],"2 Länderkennzeichen + 2 Prüfziffer + 8 Bankleitzahl + 10 Kontonummer = 22.");
+open("z-iban2","Z","Aus welchen Teilen besteht die IBAN? Nenne auch die Stellenzahl.",[["Länderkennzeichen","land|kennz"],["Prüfziffer","prufz"],["Bankleitzahl","bankleit|blz"],["Kontonummer","kontonummer|konto"]],3,"Länderkennzeichen (2), Prüfziffer (2), Bankleitzahl (8), Kontonummer (10)");
+mc("z-iban3","Z","Wie viele IBANs hat ein Kontoinhaber?",["Eine eigene pro Konto","Genau eine insgesamt","Eine pro Bank","Eine pro Jahr"],"IBAN = International Banking Account Number, pro Konto eine.");
+mc("z-bic","Z","Was ist die BIC?",["Der Business Identifier Code, die Kennung einer Bank","Die Kontonummer des Kunden","Die Prüfziffer der IBAN","Die Kartennummer"],"Jede Bank hat eine eigene BIC.");
+mc("z-einzug","Z","Einzugsermächtigung: Wie lange kann sich der Schuldner das Geld ohne Angabe von Gründen zurückholen?",["8 Wochen","4 Wochen","14 Tage","6 Monate"],"Rückgabe innerhalb von acht Wochen, ohne Gründe.");
+mc("z-bar1","Z","Wo wird ein Barscheck eingelöst?",["Bei der Bank des Ausstellers (bezogene Bank)","Bei der Bank des Empfängers","Beim Finanzamt","Bei der EZB"],"Der Empfänger erhält den Betrag in bar. Der Barscheck gehört zur halbbaren Zahlung.");
+mc("z-bar2","Z","Warum ist ein Barscheck riskant?",["Wegen „oder Überbringer“ kann ihn auch ein Dieb einlösen","Er verfällt nach einem Tag","Er wird nur gutgeschrieben","Er braucht eine PIN"],"Jeder Besitzer des Schecks kann sich den Betrag auszahlen lassen.");
+mc("z-verr","Z","Was bewirkt der Zusatz „nur zur Verrechnung“?",["Gutschrift auf das Konto (unter Vorbehalt), keine Barauszahlung","Sofortige Barauszahlung","Der Scheck wird ungültig","Nur der Empfänger darf einlösen"],"Verrechnungsscheck: handschriftlicher Zusatz, Betrag wird gutgeschrieben.");
+mc("z-order","Z","Was fehlt beim Orderscheck (Namensscheck)?",["Der Zusatz „oder Überbringer“","Der Betrag","Die Unterschrift","Das Datum"],"Nur der Empfänger kann einlösen.");
+mc("z-indo","Z","Was bewirkt ein Indossament beim Orderscheck?",["Name auf der Rückseite beauftragt eine bestimmte Person mit der Einlösung","Der Scheck wird gesperrt","Der Betrag wird in Worten wiederholt","Der Zahlende bekommt eine Quittung"],"Der Empfänger darf per Eintrag eines Namens auf der Rückseite weitergeben.");
+open("z-frist","Z","Nenne die Einlösefristen für Schecks (inländisch, europäisch, außereuropäisch).",[["Inland: 7 Tage","\\b7\\b|sieben"],["Europa: 20 Tage","\\b20\\b|zwanzig"],["Außereuropa: 70 Tage","\\b70\\b|siebzig"]],3,"Inländisch 7 Tage, europäisch 20 Tage, außereuropäisch 70 Tage");
+mc("z-kontl","Z","Kontaktloses Zahlen mit der Girocard geht meist bis …",["50 €","25 €","100 €","150 €"],"Karte ans Lesegerät halten, fertig.");
+mc("z-pos1","Z","Welches Kartenverfahren gibt dem Verkäufer eine Zahlungsgarantie?",["PoS (mit PIN)","ELV (mit Unterschrift)","Lastschrift","Nachnahme"],"Bei PoS wird automatisch geprüft, ob das Konto gedeckt ist. Sonst wird die Zahlung verweigert.");
+mc("z-elv1","Z","Beim ELV wird geprüft …",["nur, ob die Karte gültig ist","ob das Konto gedeckt ist","die PIN","nichts"],"ELV: Unterschrift auf Display oder Zettel. Der Verkäufer hat keine Zahlungsgarantie.");
+mc("z-elv2","Z","ELV: Wann wird dem Verkäufer der Betrag gutgeschrieben?",["In der Regel am folgenden Arbeitstag","Sofort","Nach 8 Wochen","Nach 7 Tagen"],"Der Verkäufer reicht die Lastschrift bei seiner Bank ein.");
+mc("z-gebuehr","Z","Gebühren für den Verkäufer: PoS im Vergleich zu ELV?",["PoS höher, ELV niedriger","PoS niedriger, ELV höher","Beide gleich","Beide gebührenfrei"],"PoS: relativ hohe Transaktionsgebühr, dafür Garantie und Direktgutschrift.");
+
+/* Recht */
+mc("r-sub","R","Rechtssubjekte sind …",["natürliche und juristische Personen","nur Menschen","nur Unternehmen","Sachen und Rechte"],"Natürliche Personen und juristische Personen (privaten oder öffentlichen Rechts).");
+mc("r-nat","R","Natürliche Personen sind rechtsfähig …",["ab Vollendung der Geburt bis zum Tod","ab 7 Jahren","ab 18 Jahren","ab der Zeugung"],"Rechtsfähig = Träger von Rechten und Pflichten.");
+mc("r-rf","R","Rechtsfähigkeit bedeutet …",["Träger von Rechten und Pflichten zu sein","Verträge wirksam abschließen zu können","volljährig zu sein","Steuern zahlen zu müssen"],"Verträge wirksam abschließen betrifft die Geschäftsfähigkeit.");
+multi("r-jp1","R","Welche sind juristische Personen des privaten Rechts?",["GmbH","AG","e.V."],["Gemeinde","IHK"],"Sie erlangen Rechtsfähigkeit durch Eintragung in ein Register.");
+multi("r-jp2","R","Welche sind juristische Personen des öffentlichen Rechts?",["Gemeinde","IHK","Land NRW"],["GmbH","AG"],"Sie erlangen Rechtsfähigkeit durch einen Verwaltungsakt.");
+mc("r-jp3","R","Wie erlangt eine GmbH Rechtsfähigkeit?",["Durch Eintragung in ein Register","Durch Verwaltungsakt","Durch Geburt","Durch Gesellschafterbeschluss"],"Privatrecht: Registereintrag.");
+mc("r-jp4","R","Wie erlangt eine Gemeinde Rechtsfähigkeit?",["Durch Verwaltungsakt","Durch Registereintrag","Durch Geburt","Durch Vertrag"],"Öffentliches Recht: Verwaltungsakt.");
+multi("r-gu","R","Wer ist geschäftsunfähig?",["Ein Kind unter 7 Jahren","Eine dauerhaft geistig sehr eingeschränkte Person"],["Ein 12-Jähriger","Ein 17-Jähriger"],"Geschäfte mit Geschäftsunfähigen sind von vornherein nichtig.");
+mc("r-nicht","R","Geschäfte mit Geschäftsunfähigen sind …",["von vornherein nichtig","schwebend unwirksam","wirksam","anfechtbar"],"Nichtig = ungültig, auch mit Zustimmung der Eltern nicht heilbar.");
+mc("r-bg","R","Beschränkt geschäftsfähig sind …",["alle von 7 bis einschließlich 17 Jahren","alle unter 7 Jahren","alle von 14 bis 21 Jahren","alle von 16 bis 18 Jahren"],"Grundsätzlich ist die Zustimmung der Eltern nötig.");
+mc("r-schweb","R","Ein Geschäft eines Minderjährigen ohne Zustimmung der Eltern ist bis zur Entscheidung …",["schwebend unwirksam","nichtig","voll wirksam","strafbar"],"Mit Zustimmung wird es wirksam.");
+mc("r-schweb2","R","„Schwebend unwirksam“ bedeutet …",["Die Wirksamkeit hängt von der Zustimmung der Eltern ab","Es ist endgültig ungültig","Es ist endgültig gültig","Ein Gericht muss entscheiden"],"Zustimmung macht das Geschäft wirksam.");
+mc("r-vg","R","Voll geschäftsfähig ist, wer …",["mindestens 18 ist und nicht dauerhaft geistesgestört","mindestens 16 ist","mindestens 21 ist","verheiratet ist"],"Ab 18, wenn nicht dauerhaft geistesgestört.");
+open("r-ausn","R","Nenne die 3 Ausnahmen, bei denen ein Jugendlicher keine Zustimmung der Eltern braucht.",[["Taschengeldparagraph","taschengeld"],["Nur rechtlicher Vorteil","vorteil"],["Arbeits-/Ausbildungsverhältnis oder selbstständige Tätigkeit","arbeit|ausbildung|selbst"]],3,"1. Taschengeldparagraph (Geld zur freien Verfügung mit Zustimmung der Eltern). 2. Geschäfte mit nur rechtlichem Vorteil. 3. Geschäfte im Rahmen des Arbeits- oder Ausbildungsverhältnisses oder einer selbstständigen Tätigkeit.");
+multi("r-ausn2","R","Wann braucht ein Jugendlicher keine Zustimmung?",["Taschengeldparagraph","Nur rechtlicher Vorteil","Geschäft im Rahmen des Ausbildungsverhältnisses"],["Autokauf auf Raten","Abschluss eines Handyvertrags"],"Alles andere braucht grundsätzlich die Zustimmung.");
+open("r-unt","R","Erkläre den Unterschied zwischen Rechtsfähigkeit und Geschäftsfähigkeit.",[["Rechtsfähigkeit: Träger von Rechten und Pflichten","recht.*pflicht|trager"],["Geschäftsfähigkeit: Verträge/Rechtsgeschäfte wirksam abschließen","geschaft|vertrag"]],2,"Rechtsfähig = Träger von Rechten und Pflichten (natürliche Personen ab Vollendung der Geburt). Geschäftsfähig = Rechtsgeschäfte selbst wirksam abschließen können (abgestuft: unter 7, 7–17, ab 18).");
+mc("r-f1","R","Ein 6-Jähriger kauft allein ein Spielzeug. Der Kaufvertrag ist …",["nichtig","schwebend unwirksam","wirksam","wirksam durch den Taschengeldparagraphen"],"Unter 7 = geschäftsunfähig.");
+mc("r-f2","R","Ein 15-Jähriger schließt ohne Wissen der Eltern einen 24-Monats-Handyvertrag ab. Der Vertrag ist …",["schwebend unwirksam bis zur Zustimmung der Eltern","nichtig","sofort wirksam","wirksam, weil er über 14 ist"],"Beschränkt geschäftsfähig, keine Ausnahme erfüllt.");
+mc("r-f3","R","Ein 16-Jähriger kauft von seinem Taschengeld Kopfhörer für 25 €. Der Kauf ist …",["wirksam (Taschengeldparagraph)","schwebend unwirksam","nichtig","nur mit Unterschrift der Eltern wirksam"],"Das Geld wurde ihm mit Zustimmung der Eltern zur freien Verfügung überlassen.");
+mc("r-f4","R","Gregor nimmt ein Geldgeschenk seiner Oma an. Warum braucht er keine Zustimmung der Eltern?",["Das Geschäft bringt ihm nur einen rechtlichen Vorteil","Er ist volljährig","Er ist geschäftsunfähig","Es greift der Taschengeldparagraph"],"Gregor ist rechtsfähig, aber nur beschränkt geschäftsfähig.");
+mc("r-f5","R","Eine 17-jährige Auszubildende schließt ein Geschäft im Rahmen ihres Ausbildungsverhältnisses ab. Zustimmung der Eltern?",["Nicht erforderlich","Erforderlich","Nur schriftlich erforderlich","Nur bei Beträgen über 100 € erforderlich"],"Ausnahme: Geschäfte im Rahmen des Arbeits- oder Ausbildungsverhältnisses.");
+
+/* ---------- Zustand ---------- */
+const LS="lernzettel-wb-v1";
+let S={cards:{},ts:0};
+let view="ueben",filter="alle",cur=null,answered=false,recent=[],sel=new Set();
+let ref=null,mode="local",statusMsg="lädt …";
+const $=s=>document.querySelector(s);
+const st=c=>S.cards[c.id]||(S.cards[c.id]={b:0,s:0,r:0,w:0,t:0});
+const norm=s=>String(s).toLowerCase().replace(/ß/g,"ss").replace(/ä|ae/g,"a").replace(/ö|oe/g,"o").replace(/ü|ue/g,"u");
+const shuffle=a=>{a=a.slice();for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]]}return a};
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+
+/* ---------- Speichern ---------- */
+function setStatus(ok,msg){statusMsg=msg;const el=$("#status");el.innerHTML='<span class="dot'+(ok?" ok":"")+'"></span><span>'+esc(msg)+"</span>"}
+let saving=false,dirty=false;
+async function save(){
+  S.ts=Date.now();
+  try{localStorage.setItem(LS,JSON.stringify(S))}catch(e){}
+  if(!ref){setStatus(true,"im Browser gespeichert");return}
+  dirty=true;if(saving)return;saving=true;
+  while(dirty){dirty=false;
+    try{await ref.set(JSON.parse(JSON.stringify(S)));setStatus(true,"gespeichert")}
+    catch(e){diag.push("Speichern: "+errTxt(e));setStatus(false,"Speichern im Konto fehlgeschlagen")}}
+  saving=false;
+}
+let diag=[];
+const errTxt=e=>{try{return (e&&(e.code||e.name)?(e.code||e.name)+": ":"")+((e&&e.message)||String(e))}catch(x){return "unbekannt"}};
+async function initStore(){
+  let lsOk=false;
+  try{localStorage.setItem(LS+"-t","1");localStorage.removeItem(LS+"-t");lsOk=true}catch(e){diag.push("Browser-Speicher gesperrt (z. B. privates Fenster)")}
+  try{const d=localStorage.getItem(LS);if(d){const p=JSON.parse(d);if(p&&p.cards)S=p}}catch(e){}
+  setStatus(lsOk,lsOk?"im Browser gespeichert":"Speichern nicht möglich, Sicherungscode nutzen");
+}
+
+/* ---------- Adaptive Auswahl ---------- */
+function pool(){
+  let p=CARDS;
+  if(filter==="Z"||filter==="R")p=CARDS.filter(c=>c.t===filter);
+  if(filter==="schwach"){const w=CARDS.filter(c=>{const s=st(c);return s.s>0&&s.b<=1});if(w.length)p=w}
+  return p;
+}
+function weight(c){const s=st(c);if(!s.s)return 3;return [8,4,2,.8,.25][s.b]}
+function nextCard(){
+  let p=pool().filter(c=>!recent.includes(c.id));
+  if(!p.length)p=pool();
+  let tot=p.reduce((a,c)=>a+weight(c),0),x=Math.random()*tot,pick=p[0];
+  for(const c of p){x-=weight(c);if(x<=0){pick=c;break}}
+  cur={c:pick,order:shuffle(pick.type==="multi"?[...pick.good,...pick.bad].map((_,i)=>i):pick.o?pick.o.map((_,i)=>i):[])};
+  recent.push(pick.id);if(recent.length>4)recent.shift();
+  answered=false;sel=new Set();render();
+}
+function record(c,ok){
+  const s=st(c);s.s++;s.t=Date.now();
+  if(ok){s.r++;s.b=Math.min(4,s.b+1)}else{s.w++;s.b=0}
+  save();
+}
+
+/* ---------- Auswertung ---------- */
+function kw(c,text){
+  const t=norm(text);
+  return c.items.map(([label,re])=>[label,new RegExp(norm(re)).test(t)]);
+}
+function check(){
+  const c=cur.c;let ok=false,html="",extra="";
+  if(c.type==="mc"){
+    const picked=[...sel][0];if(picked===undefined)return;
+    ok=picked===0;
+    document.querySelectorAll(".opt").forEach(b=>{const i=+b.dataset.i;b.disabled=true;
+      if(i===0)b.classList.add("right");else if(i===picked)b.classList.add("wrong")});
+    html=ok?"":"Richtig ist: <b>"+esc(c.o[0])+"</b>";
+  }else if(c.type==="multi"){
+    const all=[...c.good,...c.bad];const goodN=c.good.length;
+    ok=sel.size===goodN&&[...sel].every(i=>i<goodN);
+    document.querySelectorAll(".opt").forEach(b=>{const i=+b.dataset.i;b.disabled=true;
+      if(i<goodN)b.classList.add("right");else if(sel.has(i))b.classList.add("wrong")});
+    html=ok?"":"Richtig sind: <b>"+c.good.map(esc).join(", ")+"</b>";
+  }else{
+    const txt=$("#ans").value.trim();if(!txt)return;
+    const res=kw(c,txt);const hits=res.filter(r=>r[1]).length;ok=hits>=c.min;
+    $("#ans").disabled=true;
+    html="<ul>"+res.map(r=>"<li>"+(r[1]?"✓ ":"✗ ")+esc(r[0])+"</li>").join("")+"</ul><div class=\"model\"><b>Musterantwort:</b> "+esc(c.model)+"</div>";
+    extra="open";
+  }
+  answered=true;record(c,ok);
+  const part=!ok&&c.type==="open";
+  const box=document.createElement("div");
+  box.className="fb "+(ok?"ok":"no");box.id="fb";
+  box.innerHTML='<b class="t">'+(ok?"Richtig":"Noch nicht richtig")+"</b>"+(html?"<div>"+html+"</div>":"")+(c.e?"<div>"+esc(c.e)+"</div>":"");
+  $("#act").replaceWith(box);
+  const row=document.createElement("div");row.className="row";row.id="after";
+  row.innerHTML='<button class="btn" data-a="next">Weiter</button>';
+  if(c.type==="open"){
+    if(!ok)row.innerHTML+='<button class="btn ghost" data-a="override">Ich lag richtig</button>';
+  }
+  box.after(row);
+  const nb=row.querySelector('[data-a="next"]');if(nb)nb.focus();
+}
+function override(){
+  const c=cur.c,s=st(c);
+  s.w=Math.max(0,s.w-1);s.r++;s.b=Math.min(4,1);save();
+  const fb=$("#fb");fb.className="fb ok";fb.querySelector(".t").textContent="Als richtig gewertet";
+  const b=document.querySelector('[data-a="override"]');if(b)b.remove();
+}
+async function askClaude(){
+  const c=cur.c,btn=$("#cl");btn.disabled=true;btn.textContent="Claude prüft …";
+  try{
+    const sample=await claude.use("sample");
+    if(!sample){btn.textContent="Nicht verfügbar";return}
+    const r=await sample.json("Du korrigierst die Antwort eines Berufsschülers (Immobilienkaufmann, Deutschland). Frage: "+c.q+"\nMusterantwort: "+c.model+"\nAntwort des Schülers: "+$("#ans").value+"\nAntworte nur als JSON: {\"richtig\":true|false,\"feedback\":\"höchstens 3 kurze Sätze auf Deutsch: was stimmt, was fehlt oder ist falsch\"}");
+    const d=document.createElement("div");d.className="fb "+(r.richtig?"ok":"part");
+    const tt=document.createElement("b");tt.className="t";tt.textContent=r.richtig?"Claude: inhaltlich richtig":"Claude: noch lückenhaft";
+    const p=document.createElement("div");p.className="claude";p.textContent=String(r.feedback||"");
+    d.append(tt,p);$("#after").after(d);
+    if(r.richtig&&!document.querySelector("#fb.ok"))override();
+    btn.remove();
+  }catch(e){btn.disabled=false;btn.textContent="Claude nicht erreichbar, nochmal versuchen"}
+}
+
+/* ---------- Ansichten ---------- */
+function mastery(list){const m=list.filter(c=>st(c).b>=3).length;return [m,list.length]}
+function renderUeben(){
+  const [m,n]=mastery(CARDS);
+  const c=cur.c,s=st(c);
+  const chips=[["alle","Alle"],["Z","Zahlungsverkehr"],["R","Recht"],["schwach","Schwächen"]]
+    .map(([k,l])=>'<button class="chip" data-f="'+k+'" aria-pressed="'+(filter===k)+'">'+l+"</button>").join("");
+  let body="";
+  if(c.type==="mc"){
+    body='<div class="opts">'+cur.order.map(i=>'<button class="opt'+(sel.has(i)?" sel":"")+'" data-i="'+i+'"><span class="mk"></span><span>'+esc(c.o[i])+"</span></button>").join("")+"</div>";
+  }else if(c.type==="multi"){
+    const all=[...c.good,...c.bad];
+    body='<div class="opts">'+cur.order.map(i=>'<button class="opt multi'+(sel.has(i)?" sel":"")+'" data-i="'+i+'"><span class="mk"></span><span>'+esc(all[i])+"</span></button>").join("")+"</div>";
+  }else{
+    body='<textarea id="ans" placeholder="Deine Antwort …" aria-label="Deine Antwort"></textarea>';
+  }
+  const hint=c.type==="multi"?'<p class="hint">Mehrere Antworten möglich.</p>':c.type==="open"?'<p class="hint">Freitext. Stichworte genügen.</p>':"";
+  $("#main").innerHTML=
+   '<div style="display:flex;flex-direction:column;gap:12px">'+
+   '<div class="chips">'+chips+"</div>"+
+   '<div class="card"><div class="meta"><span>'+TOPICS[c.t]+(s.s?"":" · neu")+'</span><span class="boxes" title="Lernstufe">'+[0,1,2,3].map(i=>'<i class="'+(s.b>i?"on":"")+'"></i>').join("")+"</span></div>"+
+   '<h2 class="q">'+esc(c.q)+"</h2>"+hint+body+
+   '<button class="btn" id="act" data-a="check"'+(c.type==="open"?"":" disabled")+">Prüfen</button></div>"+
+   '<div class="sub">Gemeistert: '+m+" von "+n+" Karten. Falsche Karten kommen häufiger wieder.</div></div>";
+  if(filter==="schwach"&&!CARDS.some(x=>st(x).s>0&&st(x).b<=1))$("#main").insertAdjacentHTML("afterbegin",'<div class="mn">Noch keine Schwächen erfasst. Es kommen alle Karten.</div>');
+}
+function renderZettel(){
+  $("#main").innerHTML=`<div style="display:flex;flex-direction:column;gap:12px">
+  <div class="sec"><h2>Geld</h2>
+   <h3>Funktionen</h3><p>Tausch · Zahlung · Wertaufbewahrung · Wertmaßstab · Wertübertragung</p>
+   <h3>Geldarten</h3>
+   <div class="tw"><table><tr><th>Art</th><th>Merkmal</th></tr>
+   <tr><td>Bargeld</td><td>gesetzliches Zahlungsmittel (Noten und Münzen)</td></tr>
+   <tr><td>Banknoten</td><td>von der EZB ausgegeben, unbegrenzte Annahmepflicht, vertraglich abweichbar (500-€-Schein Bäckerei)</td></tr>
+   <tr><td>Münzen</td><td>von den nationalen Zentralbanken ausgegeben, Annahmepflicht bis 100 € (max. 50 Stück)</td></tr>
+   <tr><td>Buchgeld</td><td>Guthaben bei Kreditinstituten, frei verfügbar</td></tr>
+   <tr><td>Digitales Geld, Kryptowährung</td><td>weitere Geldarten</td></tr>
+   <tr><td>Geldersatzmittel</td><td>z. B. Schecks, Gutscheine</td></tr></table></div></div>
+
+  <div class="sec"><h2>Barzahlung und Quittung</h2>
+   <p>Der Zahlende hat ein Recht auf eine Quittung.</p>
+   <h3>Bestandteile (9)</h3><p>Währung · Quittungsnummer · Betrag in Ziffern · Betrag in Worten · Datum der Zahlung · Unterschrift/Stempel des Empfängers · Verwendungszweck („für“) · Ort · Name des Zahlenden</p></div>
+
+  <div class="sec"><h2>Drei Zahlungsarten</h2>
+   <div class="tw"><table><tr><th>Art</th><th>Konto nötig</th><th>Beispiele</th></tr>
+   <tr><td>Bar</td><td>keins</td><td>Noten und Münzen mit Quittung</td></tr>
+   <tr><td>Halbbar</td><td>Zahler <i>oder</i> Empfänger</td><td>Barscheck, Zahlschein, Nachnahme</td></tr>
+   <tr><td>Unbar</td><td>beide</td><td>Karte, PayPal, Lastschrift, Überweisung, Dauerauftrag</td></tr></table></div>
+   <h3>Zahlschein</h3><p>Der Zahlende reicht Betrag und Zahlschein bei der Bank ein. Der Empfänger erhält die Gutschrift auf seinem Konto.</p>
+   <h3>Nachnahme</h3><p>Postbote kassiert Rechnungsbetrag plus Gebühr und zahlt auf das Konto des Empfängers ein. Verkäufer: sicher Geld. Käufer: sicher Ware.</p>
+   <h3>Lastschrift oder Dauerauftrag</h3>
+   <div class="tw"><table><tr><th></th><th>Empfänger</th><th>Betrag</th><th>Zeitpunkt</th></tr>
+   <tr><td>Lastschrift</td><td>immer gleich</td><td>wechselt</td><td>wechselt</td></tr>
+   <tr><td>Dauerauftrag</td><td>immer gleich</td><td>gleich</td><td>gleich</td></tr></table></div>
+   <div class="mn">Einzugsermächtigung: Rückholung innerhalb von 8 Wochen ohne Gründe.</div></div>
+
+  <div class="sec"><h2>SEPA, IBAN, BIC</h2>
+   <p>SEPA = Single European Payment Area, einheitlicher europäischer Zahlungsraum.</p>
+   <h3>IBAN (22 Stellen)</h3>
+   <div class="iban"><span>DE<em>Land · 2</em></span><span>kk<em>Prüfziffer · 2</em></span><span>BBBBBBBB<em>Bankleitzahl · 8</em></span><span>KKKKKKKKKK<em>Kontonummer · 10</em></span></div>
+   <p>Pro Konto eine eigene IBAN. Jede Bank hat eine eigene BIC (Business Identifier Code).</p></div>
+
+  <div class="sec"><h2>Schecks</h2>
+   <div class="tw"><table><tr><th>Scheck</th><th>Kern</th></tr>
+   <tr><td>Barscheck</td><td>Einlösung bar bei der bezogenen Bank (Bank des Ausstellers). „oder Überbringer“: auch ein Dieb kann einlösen. Halbbar.</td></tr>
+   <tr><td>Verrechnungsscheck</td><td>„nur zur Verrechnung“ (handschriftlich): Gutschrift unter Vorbehalt, keine Barauszahlung.</td></tr>
+   <tr><td>Orderscheck</td><td>ohne „oder Überbringer“: nur der Empfänger löst ein. Weitergabe per Indossament (Name auf der Rückseite).</td></tr></table></div>
+   <h3>Einlösefristen</h3><p>Inland <b>7</b> Tage · Europa <b>20</b> Tage · außerhalb Europas <b>70</b> Tage</p></div>
+
+  <div class="sec"><h2>Girocard</h2>
+   <div class="tw"><table><tr><th>Verfahren</th><th>Ablauf</th><th>Für den Verkäufer</th></tr>
+   <tr><td>Kontaktlos</td><td>Karte ans Gerät, meist bis 50 €</td><td></td></tr>
+   <tr><td>PoS</td><td>Karte plus PIN, Deckung wird geprüft</td><td>Zahlungsgarantie, Direktgutschrift, hohe Gebühr</td></tr>
+   <tr><td>ELV</td><td>Karte plus Unterschrift, nur Gültigkeit der Karte wird geprüft</td><td>keine Garantie, Gutschrift meist am nächsten Arbeitstag, niedrigere Gebühr</td></tr></table></div></div>
+
+  <div class="sec"><h2>Rechtssubjekte</h2>
+   <ul><li><b>Natürliche Personen:</b> rechtsfähig ab Vollendung der Geburt bis zum Tod</li>
+   <li><b>Juristische Personen des Privatrechts</b> (GmbH, AG, e.V.): Rechtsfähigkeit durch Registereintrag</li>
+   <li><b>Juristische Personen des öffentlichen Rechts</b> (Gemeinde, IHK, Land NRW): durch Verwaltungsakt</li></ul>
+   <div class="mn">Rechtsfähig = Träger von Rechten und Pflichten.</div></div>
+
+  <div class="sec"><h2>Geschäftsfähigkeit</h2>
+   <div class="tw"><table><tr><th>Stufe</th><th>Wer</th><th>Folge</th></tr>
+   <tr><td>Geschäftsunfähig</td><td>unter 7 Jahren, dauerhaft geistig sehr Eingeschränkte</td><td>Geschäfte von vornherein <b>nichtig</b></td></tr>
+   <tr><td>Beschränkt geschäftsfähig</td><td>7 bis einschließlich 17 Jahre</td><td>Zustimmung der Eltern nötig, bis dahin <b>schwebend unwirksam</b></td></tr>
+   <tr><td>Voll geschäftsfähig</td><td>ab 18, nicht dauerhaft geistesgestört</td><td>Geschäfte wirksam</td></tr></table></div>
+   <h3>Ausnahmen ohne Zustimmung der Eltern</h3>
+   <ul><li>Taschengeldparagraph: Geld, das zur freien Verfügung überlassen wurde</li><li>Geschäfte mit nur rechtlichem Vorteil</li><li>Geschäfte im Arbeits- oder Ausbildungsverhältnis oder in selbstständiger Tätigkeit</li></ul>
+   <div class="mn">Gregor ist rechtsfähig und nur beschränkt geschäftsfähig. Das Geldgeschenk der Oma darf er annehmen, weil es ihm nur einen rechtlichen Vorteil bringt.</div></div></div>`;
+}
+function renderStand(){
+  const rows=Object.keys(TOPICS).map(k=>{const l=CARDS.filter(c=>c.t===k);const [m,n]=mastery(l);
+    const seen=l.filter(c=>st(c).s>0).length;
+    return `<div class="sec"><h2>${TOPICS[k]}</h2><div class="bar"><span style="width:${Math.round(m/n*100)}%"></span></div>
+    <div class="sub">${m} von ${n} gemeistert · ${seen} von ${n} gesehen</div></div>`}).join("");
+  const all=CARDS.map(c=>[c,st(c)]);
+  const tot=all.reduce((a,[,s])=>a+s.s,0),right=all.reduce((a,[,s])=>a+s.r,0);
+  const weak=all.filter(([,s])=>s.s>0&&s.b<=1).sort((a,b)=>b[1].w-a[1].w).slice(0,8);
+  const lv=[0,1,2,3,4].map(i=>all.filter(([,s])=>s.b===i&&s.s>0).length);
+  $("#main").innerHTML=`<div style="display:flex;flex-direction:column;gap:12px">
+  <div class="stat"><div><b>${tot}</b><span>Antworten</span></div><div><b>${tot?Math.round(right/tot*100):0} %</b><span>richtig</span></div><div><b>${all.filter(([,s])=>s.b>=3).length}/${CARDS.length}</b><span>gemeistert</span></div></div>
+  ${rows}
+  <div class="sec"><h2>Lernstufen</h2><div class="sub">Stufe 0 = Wiederholen, 3 und höher = gemeistert (3 Treffer in Folge)</div>
+   <div class="stat">${lv.map((n,i)=>`<div><b>${n}</b><span>Stufe ${i}</span></div>`).join("")}<div><b>${CARDS.filter(c=>!st(c).s).length}</b><span>neu</span></div></div></div>
+  <div class="sec"><h2>Schwächste Karten</h2>${weak.length?'<div class="weak">'+weak.map(([c,s])=>`<div><span>${esc(c.q)}</span><small>${s.w}× falsch</small></div>`).join("")+"</div>":'<div class="sub">Noch nichts Auffälliges.</div>'}
+   ${weak.length?'<button class="btn" data-a="drill">Schwächen üben</button>':""}</div>
+  <div class="sec"><h2>Speicher</h2><div class="sub">${esc(statusMsg)}${diag.length?"<br>Details: "+esc(diag.join(" · ")):""}</div>
+   <div class="sub">Sicherungscode: Kopiere ihn und füge ihn später wieder ein, falls der Stand verloren geht.</div>
+   <textarea id="bk" aria-label="Sicherungscode" style="min-height:70px;font:400 .75rem var(--f-mono)"></textarea>
+   <div class="row"><button class="btn ghost" data-a="bkout">Code erzeugen</button><button class="btn ghost" data-a="bkin">Code einlesen</button></div><div class="sub" id="bkm"></div></div>
+  <div class="sec"><h2>Zurücksetzen</h2><div class="row" id="rs"><button class="btn ghost" data-a="reset1">Fortschritt löschen</button></div></div></div>`;
+}
+function render(){
+  document.querySelectorAll("#tabs button").forEach(b=>b.setAttribute("aria-selected",b.dataset.v===view));
+  if(view==="ueben"){if(!cur)return nextCard();renderUeben()}else if(view==="zettel")renderZettel();else renderStand();
+}
+
+/* ---------- Ereignisse ---------- */
+document.addEventListener("click",e=>{
+  const t=e.target.closest("button");if(!t)return;
+  if(t.parentElement&&t.parentElement.id==="tabs"){view=t.dataset.v;render();window.scrollTo(0,0);return}
+  if(t.dataset.f){filter=t.dataset.f;recent=[];nextCard();return}
+  if(t.classList.contains("opt")&&!answered){
+    const i=+t.dataset.i;
+    if(cur.c.type==="mc"){sel=new Set([i])}else{sel.has(i)?sel.delete(i):sel.add(i)}
+    document.querySelectorAll(".opt").forEach(b=>b.classList.toggle("sel",sel.has(+b.dataset.i)));
+    $("#act").disabled=sel.size===0;return}
+  switch(t.dataset.a){
+    case"check":check();break;
+    case"next":nextCard();window.scrollTo(0,0);break;
+    case"override":override();break;
+    case"claude":askClaude();break;
+    case"drill":filter="schwach";view="ueben";recent=[];nextCard();break;
+    case"reset1":$("#rs").innerHTML='<span class="sub">Wirklich alles löschen?</span><button class="btn" data-a="reset2">Ja, löschen</button><button class="btn ghost" data-a="reset0">Abbrechen</button>';break;
+    case"bkout":{const v=btoa(unescape(encodeURIComponent(JSON.stringify(S))));const t=$("#bk");t.value=v;t.select();
+      try{navigator.clipboard.writeText(v).then(()=>$("#bkm").textContent="Code kopiert.",()=>$("#bkm").textContent="Bitte den Code markieren und kopieren.")}catch(x){$("#bkm").textContent="Bitte den Code markieren und kopieren."}break}
+    case"bkin":{try{const o=JSON.parse(decodeURIComponent(escape(atob($("#bk").value.trim()))));if(!o||!o.cards)throw 0;S=o;S.ts=Date.now();save();renderStand();$("#bkm")&&0}catch(x){$("#bkm").textContent="Code ungültig."}break}
+    case"reset0":renderStand();break;
+    case"reset2":S={cards:{},ts:0};recent=[];save();renderStand();break;
+  }
+});
+initStore().finally(()=>{});
+view="ueben";nextCard();
+</script>
+
+</body></html>
